@@ -34,22 +34,10 @@ jobs:
   setup-matrix:
     name: Setup Build Matrix
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       build_all: ${{ steps.set-matrix.outputs.build_all }}
     steps:
-      - name: Debug Token Permissions
-        run: |
-          echo "🔐 Debugging token permissions..."
-          echo "GITHUB_TOKEN permissions:"
-          gh auth status --show-token
-          echo "GITHUB_TOKEN permissions:"
-          echo "GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}"
-          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}
       - name: Set matrix
         id: set-matrix
         run: |
@@ -718,6 +706,9 @@ jobs:
     name: Create Release
     needs: [setup-matrix, build-native]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
