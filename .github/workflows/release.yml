@@ -27,12 +27,16 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
 jobs:
   # Resolve which matrix entries to build based on the rust_target input
   setup-matrix:
     name: Setup Build Matrix
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       build_all: ${{ steps.set-matrix.outputs.build_all }}
