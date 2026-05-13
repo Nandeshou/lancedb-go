@@ -27,7 +27,6 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -42,6 +41,15 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       build_all: ${{ steps.set-matrix.outputs.build_all }}
     steps:
+      - name: Debug Token Permissions
+        run: |
+          echo "🔐 Debugging token permissions..."
+          echo "GITHUB_TOKEN permissions:"
+          gh auth status --show-token
+          echo "GITHUB_TOKEN permissions:"
+          echo "GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}"
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}
       - name: Set matrix
         id: set-matrix
         run: |

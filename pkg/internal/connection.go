@@ -5,6 +5,11 @@ package internal
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../include
+#cgo linux,amd64 LDFLAGS: -L${SRCDIR}/../../../lib/linux_amd64 -llancedb_go -ldl -lm -lpthread
+#cgo linux,arm64 LDFLAGS: -L${SRCDIR}/../../../lib/linux_arm64 -llancedb_go -ldl -lm -lpthread
+#cgo darwin,amd64 LDFLAGS: -L${SRCDIR}/../../../lib/darwin_amd64 -llancedb_go -framework Security -framework CoreFoundation
+#cgo darwin,arm64 LDFLAGS: -L${SRCDIR}/../../../lib/darwin_arm64 -llancedb_go -framework Security -framework CoreFoundation
+#cgo windows,amd64 LDFLAGS: -L${SRCDIR}/../../lib/windows-gnu_amd64 -llancedb_go -lbz2 -lzstd -lssl -lcrypto -lws2_32 -lbcrypt -ladvapi32 -luserenv -lntdll -lsecur32 -lole32 -lncrypt
 #include "lancedb.h"
 */
 import "C"
