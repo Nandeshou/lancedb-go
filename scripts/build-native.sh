@@ -137,11 +137,21 @@ case "$PLATFORM" in
         ;;
 esac
 
-# Generate C header (only once)
+# Generate C header (only once). cbindgen is a dev tool that CI runners don't
+# have; the generated header is committed, so when cbindgen is missing and the
+# committed header exists we keep it rather than failing the whole native build
+# (the header only changes when the Rust FFI surface does).
 if [ ! -f "$INCLUDE_DIR/lancedb.h" ] || [ "$PLATFORM-$ARCH" = "$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')" ]; then
-    echo "📝 Generating C header..."
-    mkdir -p "$INCLUDE_DIR"
-    cbindgen --config cbindgen.toml --crate lancedb-go --output "$INCLUDE_DIR/lancedb.h"
+    if command -v cbindgen >/dev/null 2>&1; then
+        echo "📝 Generating C header..."
+        mkdir -p "$INCLUDE_DIR"
+        cbindgen --config cbindgen.toml --crate lancedb-go --output "$INCLUDE_DIR/lancedb.h"
+    elif [ -f "$INCLUDE_DIR/lancedb.h" ]; then
+        echo "⚠️  cbindgen not installed; keeping the committed header at $INCLUDE_DIR/lancedb.h"
+    else
+        echo "❌ cbindgen not installed and no committed header exists at $INCLUDE_DIR/lancedb.h" >&2
+        exit 1
+    fi
 fi
 
 echo "✅ Build completed successfully!"
