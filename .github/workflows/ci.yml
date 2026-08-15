@@ -23,7 +23,15 @@ jobs:
   # Phase 1: Lightning-fast checks (only formatting)
   quick-checks:
     name: Quick Checks
-    runs-on: ubuntu-latest
+    # ops-arm64 (Azure), not ubuntu-latest. CI runs in Azure: hosted minutes are
+    # metered and the org's Actions budget was reached on 2026-08-15, after which
+    # every ubuntu-latest job failed in four seconds with no runner assigned.
+    #
+    # This job is formatting only — rustfmt and gofmt read source and produce a
+    # verdict, so it has no architecture. The build and test matrices below stay
+    # where they are: they compile and RUN x86_64-unknown-linux-gnu artifacts, and
+    # there is no org-level amd64 pool in Azure to run them on.
+    runs-on: ops-arm64
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
