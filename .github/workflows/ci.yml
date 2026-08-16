@@ -23,15 +23,21 @@ jobs:
   # Phase 1: Lightning-fast checks (only formatting)
   quick-checks:
     name: Quick Checks
-    # ops-arm64 (Azure), not ubuntu-latest. CI runs in Azure: hosted minutes are
-    # metered and the org's Actions budget was reached on 2026-08-15, after which
-    # every ubuntu-latest job failed in four seconds with no runner assigned.
+    # ubuntu-latest ON PURPOSE — do not move this to the self-hosted ops-arm64
+    # pool, and the reason is not architecture.
     #
-    # This job is formatting only — rustfmt and gofmt read source and produce a
-    # verdict, so it has no architecture. The build and test matrices below stay
-    # where they are: they compile and RUN x86_64-unknown-linux-gnu artifacts, and
-    # there is no org-level amd64 pool in Azure to run them on.
-    runs-on: ops-arm64
+    # THIS REPOSITORY IS A PUBLIC FORK, and this workflow triggers on
+    # `pull_request`. Anyone may open one. Running that on the org's private ARC
+    # runners would execute a stranger's code inside the OPS cluster, in a pod
+    # with a privileged Docker-in-Docker sidecar and VNet reachability. GitHub
+    # documents this as the reason not to pair self-hosted runners with public
+    # repositories, and an ephemeral pod limits persistence, not the first
+    # execution.
+    #
+    # The Azure-runner policy exists because hosted minutes are metered and the
+    # org's Actions budget was reached. That does not apply here: hosted minutes
+    # are FREE for public repositories, so this job costs the budget nothing.
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
